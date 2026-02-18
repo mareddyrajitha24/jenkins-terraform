@@ -5,32 +5,34 @@ pipeline {
         // These IDs must match the credentials you add in Jenkins
         AWS_ACCESS_KEY_ID     = credentials('aws-access-key')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
+        AWS_DEFAULT_REGION    = 'us-east-1'
+        TF_IN_AUTOMATION      = 'true'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Pull code from your GitHub repo
                 git branch: 'main', url: 'https://github.com/mareddyrajitha24/jenkins-terraform.git'
             }
         }
 
         stage('Terraform Init') {
             steps {
-                sh 'terraform init'
+                sh 'terraform init -input=false'
             }
         }
 
         stage('Terraform Plan') {
             steps {
-                sh 'terraform plan'
+                sh 'terraform plan -input=false -out=tfplan'
             }
         }
 
         stage('Terraform Apply') {
             steps {
-                sh 'terraform apply -auto-approve'
+                sh 'terraform apply -input=false -auto-approve tfplan'
             }
         }
     }
 }
+
